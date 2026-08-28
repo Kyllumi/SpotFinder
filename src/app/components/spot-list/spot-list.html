@@ -1,0 +1,17 @@
+<div class="spot-list">
+    <div class="spot-card" *ngFor="let spot of spots" {{console.log(spot)}}
+        [class.selected]="selectedSpotId === spot.id" (click)="spotSelected.emit(spot)">
+        <div class="card-header">
+            <h4>{{ spot.title }}</h4>
+            <span class="badge" *ngIf="spot.category">{{ spot.category }}</span>
+        </div>
+        <div class="card-body">
+            <span>⭐ {{ spot.rating ?? '-' }}/5</span>
+            <span>📌 {{ spot.status || 'N/D' }}</span>
+        </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!spots || spots.length === 0">
+        <p>🗺️ Nessun punto segreto in questa area.</p>
+    </div>
+</div>

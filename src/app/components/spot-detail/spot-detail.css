@@ -1,0 +1,44 @@
+.spot-detail {
+    background: white;
+    padding: 16px;
+    border-radius: 6px;
+}
+
+.btn-back {
+    border: none;
+    background: none;
+    color: #0284c7;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 8px;
+}
+
+.desc {
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-edit {
+    flex: 1;
+    background: #0284c7;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}

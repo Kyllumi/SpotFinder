@@ -1,0 +1,9 @@
+<div class="spot-detail" *ngIf="spot">
+    <button class="btn-back" (click)="close.emit()">← Torna alla lista</button>
+    <h2>{{ spot.title }}</h2>
+    <p class="desc">{{ spot.description || 'Nessuna nota.' }}</p>
+    <div class="actions">
+        <button class="btn-edit" (click)="edit.emit(spot)">✏️ Modifica</button>
+        <button class="btn-delete" (click)="delete.emit(spot.id)">🗑️ Elimina</button>
+    </div>
+</div>

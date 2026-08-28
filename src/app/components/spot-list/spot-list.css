@@ -1,0 +1,55 @@
+    .spot-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .spot-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .spot-card:hover,
+    .spot-card.selected {
+        border-color: #0284c7;
+        background: #f0f9ff;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-header h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: #0f172a;
+    }
+
+    .badge {
+        background: #0284c7;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #64748b;
+        padding: 20px;
+    }

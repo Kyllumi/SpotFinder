@@ -1,0 +1,43 @@
+<form [formGroup]="spotForm" (ngSubmit)="onSubmit()" class="spot-form">
+    <h3>{{ isEditMode ? '✏️ Modifica Spot' : '➕ Nuovo Spot' }}</h3>
+
+    <label>Titolo *</label>
+    <input type="text" formControlName="title" />
+
+    <div class="row">
+        <div>
+            <label>Latitudine *</label>
+            <input type="number" step="any" formControlName="latitude" />
+        </div>
+        <div>
+            <label>Longitudine *</label>
+            <input type="number" step="any" formControlName="longitude" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div>
+            <label>Categoria</label>
+            <select formControlName="category">
+                <option value="PESCA">Pesca</option>
+                <option value="SOSTA">Sosta</option>
+                <option value="PANORAMICO">Panoramico</option>
+            </select>
+        </div>
+        <div>
+            <label>Stato</label>
+            <select formControlName="status">
+                <option value="DA_VISITARE">Da Visitare</option>
+                <option value="VISITATO">Visitato</option>
+            </select>
+        </div>
+    </div>
+
+    <label>Note</label>
+    <textarea formControlName="description" rows="3"></textarea>
+
+    <div class="actions">
+        <button type="button" (click)="cancel.emit()">Annulla</button>
+        <button type="submit" [disabled]="spotForm.invalid" class="btn-save">Salva</button>
+    </div>
+</form>
