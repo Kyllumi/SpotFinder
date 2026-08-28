@@ -1,0 +1,42 @@
+<header class="top-bar">
+  <!-- Sinistra: Hamburger + Logo -->
+  <div class="brand-section">
+    <button class="hamburger-btn" (click)="toggleMenu()" aria-label="Toggle Menu">
+      ☰
+    </button>
+    <h1>🌲 SPOTFINDER</h1>
+
+    <!-- Menu a tendina -->
+    <div class="dropdown-menu" *ngIf="isMenuOpen">
+      <a href="#" class="menu-item" (click)="toggleMenu()">🗺️ Mappa</a>
+      <a href="#" class="menu-item" (click)="toggleMenu()">📍 I miei Luoghi</a>
+      <a href="#" class="menu-item" (click)="toggleMenu()">❓ FAQ</a>
+      <hr class="menu-divider" />
+      <a href="#" class="menu-item" (click)="toggleMenu()">👤 Il mio account</a>
+    </div>
+  </div>
+
+  <!-- Centro: Barra di Ricerca -->
+  <div class="search-section">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        placeholder="Cerca luogo, città o spot..." 
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+      />
+    </div>
+  </div>
+
+  <!-- Destra: Preferiti + Pulsante creazione -->
+  <div class="user-actions">
+    <button class="btn-icon-label" (click)="onFavoritesClick()" title="Mostra preferiti">
+      ⭐ <span>Preferiti</span>
+    </button>
+
+    <button class="btn-primary" (click)="onNewSpotClick()">
+      <span>➕</span> Nuovo Spot
+    </button>
+  </div>
+</header>
