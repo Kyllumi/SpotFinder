@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Spot, SpotDTO, BoundingBox } from './models/spot.model';
 import { SpotService } from './services/spot';
 
+import { HeaderComponent } from './components/header/header';
 import { MapComponent } from './components/map/map';
 import { SpotListComponent } from './components/spot-list/spot-list';
 import { SpotDetailComponent } from './components/spot-detail/spot-detail';
@@ -11,7 +12,14 @@ import { SpotFormComponent } from './components/spot-form/spot-form';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, MapComponent, SpotListComponent, SpotDetailComponent, SpotFormComponent],
+  imports: [
+    CommonModule, 
+    HeaderComponent, 
+    MapComponent, 
+    SpotListComponent, 
+    SpotDetailComponent, 
+    SpotFormComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

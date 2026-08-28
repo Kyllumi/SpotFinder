@@ -1,26 +1,38 @@
 <div class="app-container">
-  <header class="top-bar">
-    <h1>🌲 SPOTFINDER</h1>
-    <button class="btn-primary" (click)="openCreateForm()">➕ Nuovo Spot</button>
-  </header>
+  <app-header (createSpot)="openCreateForm()"></app-header>
 
   <div class="main-content">
     <aside class="sidebar">
-      <app-spot-form *ngIf="showForm" [spotToEdit]="spotToEdit" [initialCoords]="clickedCoords"
-        (save)="onSaveSpot($event)" (cancel)="closeForm()">
+      <app-spot-form 
+        *ngIf="showForm" 
+        [spotToEdit]="spotToEdit" 
+        [initialCoords]="clickedCoords"
+        (save)="onSaveSpot($event)" 
+        (cancel)="closeForm()">
       </app-spot-form>
 
-      <app-spot-detail *ngIf="selectedSpot && !showForm" [spot]="selectedSpot" (close)="selectedSpot = null"
-        (edit)="openEditForm($event)" (delete)="onDeleteSpot($event)">
+      <app-spot-detail 
+        *ngIf="selectedSpot && !showForm" 
+        [spot]="selectedSpot"
+        (close)="selectedSpot = null"
+        (edit)="openEditForm($event)"
+        (delete)="onDeleteSpot($event)">
       </app-spot-detail>
 
-      <app-spot-list [spots]="spots" [selectedSpotId]="selectedSpot?.id || null" (spotSelected)="selectedSpot = $event">
+      <app-spot-list 
+        [spots]="spots"
+        [selectedSpotId]="selectedSpot?.id || null"
+        (spotSelected)="selectedSpot = $event">
       </app-spot-list>
     </aside>
 
     <main class="map-container">
-      <app-map [spots]="spots" [selectedSpot]="selectedSpot" (boundsChanged)="onBoundsChanged($event)"
-        (mapClicked)="onMapClick($event)" (spotSelected)="selectedSpot = $event">
+      <app-map 
+        [spots]="spots"
+        [selectedSpot]="selectedSpot"
+        (boundsChanged)="onBoundsChanged($event)"
+        (mapClicked)="onMapClick($event)"
+        (spotSelected)="selectedSpot = $event">
       </app-map>
     </main>
   </div>
