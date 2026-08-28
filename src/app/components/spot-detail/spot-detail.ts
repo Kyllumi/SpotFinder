@@ -14,4 +14,6 @@ export class SpotDetailComponent {
   @Output() close = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Spot>();
   @Output() delete = new EventEmitter<number>();
+
+  readonly maxStars = [1, 2, 3, 4, 5];
 }

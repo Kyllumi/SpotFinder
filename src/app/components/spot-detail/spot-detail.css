@@ -1,44 +1,264 @@
-.spot-detail {
-    background: white;
-    padding: 16px;
-    border-radius: 6px;
+/* CONTAINER BASE SIDEBAR */
+.spot-detail-sidebar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    color: #0f172a;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-y: auto;
+}
+
+/* HERO / COVER IMAGE */
+.hero-header {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background-color: #0f172a;
+    flex-shrink: 0;
+}
+
+.hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: #94a3b8;
+    font-size: 0.85rem;
 }
 
 .btn-back {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
     border: none;
-    background: none;
-    color: #0284c7;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
-    padding: 0;
+    z-index: 5;
+    transition: background 0.2s;
+}
+
+.btn-back:hover {
+    background: rgba(15, 23, 42, 0.95);
+}
+
+.gallery-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* CORPO DETTAGLIO */
+.detail-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* RIGA METADATI INLINE (Badge + Rating) */
+.meta-inline-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
     margin-bottom: 8px;
 }
 
-.desc {
-    color: #475569;
-    font-size: 0.9rem;
+.category-badge {
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
 }
 
-.actions {
+.status-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    color: #475569;
+    text-transform: capitalize;
+}
+
+/* RATING CON STELLINE */
+.rating-inline {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.stars-list {
+    display: flex;
+    gap: 1px;
+}
+
+/* Stella di default (vuota) */
+.star-icon {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+/* Stella piena */
+.star-icon.filled {
+    color: #f59e0b;
+}
+
+.rating-val {
+    color: #92400e;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+.spot-title {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #0f172a;
+}
+
+/* PULSANTI DI AZIONE */
+.action-grid {
     display: flex;
     gap: 8px;
-    margin-top: 16px;
 }
 
-.btn-edit {
+.btn-action {
     flex: 1;
-    background: #0284c7;
-    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
     border: none;
-    padding: 8px;
-    border-radius: 4px;
     cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
 }
 
-.btn-delete {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 8px;
+.btn-action.primary {
+    background: #059669;
+    color: #ffffff;
+}
+
+.btn-action.secondary {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.btn-action.danger {
+    flex: 0 0 36px;
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.btn-action:hover {
+    opacity: 0.88;
+}
+
+/* SEZIONI */
+.section h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin: 0 0 8px 0;
+}
+
+.description-text {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #334155;
+    white-space: pre-line;
+}
+
+/* SERVIZI CHIPS */
+.services-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    color: #334155;
+}
+
+/* INFO CARD TECNICA */
+.info-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+}
+
+.info-item .label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.info-item .val {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.coords-tag {
+    background: #e2e8f0;
+    padding: 2px 6px;
     border-radius: 4px;
-    cursor: pointer;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #0f172a;
 }
