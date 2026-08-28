@@ -9,7 +9,7 @@ export interface Service {
 
 export interface SpotImage {
   id: number;
-  filePath: string;
+  file_path: string;
   uploadedAt: string;
 }
 
