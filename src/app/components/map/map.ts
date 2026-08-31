@@ -17,7 +17,16 @@ L.Marker.prototype.options.icon = defaultIcon;
   imports: [CommonModule],
   template: `<div id="map"></div>`,
   styles: [`
-    #map { width: 100%; height: 100%; min-height: 400px; }
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #map { 
+      width: 100%; 
+      height: 100%; 
+      background-color: #aad3df;
+    }
   `]
 })
 export class MapComponent implements AfterViewInit, OnChanges {
@@ -44,11 +53,12 @@ export class MapComponent implements AfterViewInit, OnChanges {
   }
 
   private initMap(): void {
-    this.map = L.map('map').setView([44.0678, 12.5695], 11);
+    this.map = L.map('map', {
+      attributionControl: false
+    }).setView([44.0678, 12.5695], 11);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
+      maxZoom: 19
     }).addTo(this.map);
 
     this.markersGroup.addTo(this.map);
@@ -61,7 +71,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
     setTimeout(() => {
       this.map.invalidateSize();
       this.emitBounds();
-    }, 200);
+    }, 100);
   }
 
   private emitBounds(): void {

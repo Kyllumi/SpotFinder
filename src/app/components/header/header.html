@@ -4,15 +4,16 @@
     <button class="hamburger-btn" (click)="toggleMenu()" aria-label="Toggle Menu">
       ☰
     </button>
-    <h1>🌲 SPOTFINDER</h1>
+    <h1 style="cursor: pointer" (click)="onNavigate('home')">🌲 SPOTFINDER</h1>
 
     <!-- Menu a tendina -->
     <div class="dropdown-menu" *ngIf="isMenuOpen">
-      <a href="#" class="menu-item" (click)="toggleMenu()">🗺️ Mappa</a>
-      <a href="#" class="menu-item" (click)="toggleMenu()">📍 I miei Luoghi</a>
-      <a href="#" class="menu-item" (click)="toggleMenu()">❓ FAQ</a>
+      <a class="menu-item" (click)="onNavigate('home')">🏠 Home</a>
+      <a class="menu-item" (click)="onNavigate('map')">🗺️ Mappa</a>
+      <a class="menu-item" (click)="toggleMenu()">📍 I miei Luoghi</a>
+      <a class="menu-item" (click)="toggleMenu()">❓ FAQ</a>
       <hr class="menu-divider" />
-      <a href="#" class="menu-item" (click)="toggleMenu()">👤 Il mio account</a>
+      <a class="menu-item" (click)="toggleMenu()">👤 Il mio account</a>
     </div>
   </div>
 

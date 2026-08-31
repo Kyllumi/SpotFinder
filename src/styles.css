@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #0f172a;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #f8fafc;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Tipografia Titoli Moderna */
+h1, h2, h3, h4, h5, h6, .brand-title {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+/* Fix Mappa Leaflet */
+.leaflet-container {
+  background-color: #aad3df !important;
+}
+
+.leaflet-tile {
+  margin: -0.5px !important;
+  padding: 0 !important;
+}
+
+.leaflet-control-attribution {
+  display: none !important;
+}

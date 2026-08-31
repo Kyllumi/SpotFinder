@@ -9,6 +9,7 @@ import { MapComponent } from './components/map/map';
 import { SpotListComponent } from './components/spot-list/spot-list';
 import { SpotDetailComponent } from './components/spot-detail/spot-detail';
 import { SpotFormComponent } from './components/spot-form/spot-form';
+import { HomePageComponent } from './components/home-page/home-page';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ import { SpotFormComponent } from './components/spot-form/spot-form';
     MapComponent, 
     SpotListComponent, 
     SpotDetailComponent, 
-    SpotFormComponent
+    SpotFormComponent,
+    HomePageComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -27,6 +29,10 @@ import { SpotFormComponent } from './components/spot-form/spot-form';
 export class AppComponent implements OnInit {
   spots: Spot[] = [];
   servicesList: Service[] = []; // Corretto in Service[]
+export class AppComponent {
+  currentView: 'home' | 'map' = 'home'; // Mostra la home all'avvio
+
+  spots: Spot[] = [];
   selectedSpot: Spot | null = null;
   spotToEdit: Spot | null = null;
   clickedCoords: { lat: number; lng: number } | null = null;
@@ -48,6 +54,10 @@ export class AppComponent implements OnInit {
       },
       error: (err) => console.error('Errore caricamento servizi:', err)
     });
+  }
+
+  onNavigate(view: 'home' | 'map'): void {
+    this.currentView = view;
   }
 
   onBoundsChanged(box: BoundingBox): void {
