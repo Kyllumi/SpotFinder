@@ -1,0 +1,45 @@
+<div class="map-view-wrapper">
+  <!-- SIDEBAR (A sinistra su Desktop, Bottom Sheet su Mobile) -->
+  <aside class="sidebar-panel" [class.is-open]="isSidebarOpen">
+    
+    <!-- Pulsante di chiusura visibile su Mobile -->
+    <button class="mobile-close-btn" (click)="closeSidebar()" title="Chiudi pannello">
+      ✕
+    </button>
+
+    <!-- FORM CREAZIONE/MODIFICA -->
+    <app-spot-form 
+      *ngIf="showForm" 
+      [spotToEdit]="spotToEdit" 
+      [initialCoords]="clickedCoords"
+      [availableServices]="servicesList"
+      (save)="onSaveSpot($event)" 
+      (cancel)="closeForm()">
+    </app-spot-form>
+
+    <!-- LISTA DEGLI SPOT -->
+    <app-spot-list 
+      *ngIf="!showForm"
+      [spots]="spots"
+      [selectedSpotId]="selectedSpot?.id || null"
+      (spotSelected)="onSpotCardClick($event)"
+      (viewDetail)="onGoToDetail($event)">
+    </app-spot-list>
+  </aside>
+
+  <!-- MAPPA -->
+  <main class="map-panel">
+    <!-- PULSANTE FLOTTANTE MOBILE PER MOSTRARE LA LISTA -->
+    <button class="mobile-toggle-btn" (click)="toggleSidebar()">
+      📋 {{ isSidebarOpen ? 'Mostra Mappa' : 'Lista Spot (' + spots.length + ')' }}
+    </button>
+
+    <app-map 
+      [spots]="spots"
+      [selectedSpot]="selectedSpot"
+      (boundsChanged)="onBoundsChanged($event)"
+      (mapClicked)="onMapClick($event)"
+      (spotSelected)="onSpotCardClick($event)">
+    </app-map>
+  </main>
+</div>

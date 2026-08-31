@@ -1,43 +1,36 @@
-<header class="top-bar">
-  <!-- Sinistra: Hamburger + Logo -->
+<header class="home-top-bar">
   <div class="brand-section">
     <button class="hamburger-btn" (click)="toggleMenu()" aria-label="Toggle Menu">
       ☰
     </button>
-    <h1 style="cursor: pointer" (click)="onNavigate('home')">🌲 SPOTFINDER</h1>
+    <h1 (click)="onNavigate('')">🌲 SPOTFINDER</h1>
 
     <!-- Menu a tendina -->
     <div class="dropdown-menu" *ngIf="isMenuOpen">
-      <a class="menu-item" (click)="onNavigate('home')">🏠 Home</a>
+      <a class="menu-item" (click)="onNavigate('')">🏠 Home</a>
       <a class="menu-item" (click)="onNavigate('map')">🗺️ Mappa</a>
-      <a class="menu-item" (click)="toggleMenu()">📍 I miei Luoghi</a>
       <a class="menu-item" (click)="toggleMenu()">❓ FAQ</a>
       <hr class="menu-divider" />
       <a class="menu-item" (click)="toggleMenu()">👤 Il mio account</a>
     </div>
   </div>
 
-  <!-- Centro: Barra di Ricerca -->
-  <div class="search-section">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input 
-        type="text" 
-        placeholder="Cerca luogo, città o spot..." 
-        [(ngModel)]="searchQuery"
-        (input)="onSearch()"
-      />
-    </div>
-  </div>
-
-  <!-- Destra: Preferiti + Pulsante creazione -->
-  <div class="user-actions">
-    <button class="btn-icon-label" (click)="onFavoritesClick()" title="Mostra preferiti">
-      ⭐ <span>Preferiti</span>
+  <!-- Pulsanti Dinamici -->
+  <div class="nav-actions">
+    <!-- Se siamo sulla Mappa: Mostra "Aggiungi Spot" -->
+    <button 
+      *ngIf="isMapPage" 
+      class="add-spot-btn" 
+      (click)="onNewSpotClick()">
+      ➕ Aggiungi uno Spot
     </button>
 
-    <button class="btn-primary" (click)="onNewSpotClick()">
-      <span>➕</span> Nuovo Spot
+    <!-- Se siamo in altre pagine (es. Home): Mostra "Vai alla Mappa" -->
+    <button 
+      *ngIf="!isMapPage" 
+      class="map-btn" 
+      (click)="onNavigate('map')">
+      🗺️ Vai alla Mappa
     </button>
   </div>
 </header>

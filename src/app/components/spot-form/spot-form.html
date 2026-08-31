@@ -1,94 +1,122 @@
 <form [formGroup]="spotForm" (ngSubmit)="onSubmit()" class="spot-form">
-    <h3>{{ isEditMode ? '✏️ Modifica Spot' : '➕ Nuovo Spot' }}</h3>
+    <div class="form-header">
+        <h3>{{ isEditMode ? '✏️ Modifica Spot' : '➕ Nuovo Spot' }}</h3>
+        <p class="subtitle">Inserisci i dettagli e posiziona il tuo punto sulla mappa</p>
+    </div>
 
-    <label>Titolo *</label>
-    <input type="text" formControlName="title" />
-
-    <div class="row">
-        <div>
-            <label>Latitudine *</label>
-            <input type="number" step="any" formControlName="latitude" />
+    <div class="form-body">
+        <!-- Titolo -->
+        <div class="form-group">
+            <label>Titolo *</label>
+            <input type="text" formControlName="title" placeholder="Es. Belvedere della Costa" />
         </div>
-        <div>
-            <label>Longitudine *</label>
-            <input type="number" step="any" formControlName="longitude" />
+
+        <!-- Coordinate -->
+        <div class="row">
+            <div class="form-group">
+                <label>Latitudine *</label>
+                <input type="number" step="any" formControlName="latitude" placeholder="44.1234" />
+            </div>
+            <div class="form-group">
+                <label>Longitudine *</label>
+                <input type="number" step="any" formControlName="longitude" placeholder="12.5678" />
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div>
-            <label>Categoria</label>
-            <select formControlName="category">
-                <option value="VISTA">Vista & Fotografia</option>
-                <option value="NATURA">Natura & Wild</option>
-                <option value="PESCA">Pesca & Water Spot</option>
-                <option value="VANLIFE">Vanlife & Overnight</option>
-                <option value="SPORT">Outdoor & Sport</option>
-                <option value="RELAX">Relax & Picnic</option>
-                <option value="URBEX">Urbano & Urbex</option>
-                <option value="DOG_FRIENDLY">Dog Friendly</option>
-                <option value="SMART_WORKING">Smart Working Outdoor</option>
-                <option value="FOOD_SOCIAL">Food & Social</option>
-            </select>
+        <!-- Categoria & Stato -->
+        <div class="row">
+            <div class="form-group">
+                <label>Categoria</label>
+                <select formControlName="category">
+                    <option value="VISTA">Vista & Fotografia</option>
+                    <option value="NATURA">Natura & Wild</option>
+                    <option value="PESCA">Pesca & Water Spot</option>
+                    <option value="VANLIFE">Vanlife & Overnight</option>
+                    <option value="SPORT">Outdoor & Sport</option>
+                    <option value="RELAX">Relax & Picnic</option>
+                    <option value="URBEX">Urbano & Urbex</option>
+                    <option value="DOG_FRIENDLY">Dog Friendly</option>
+                    <option value="SMART_WORKING">Smart Working Outdoor</option>
+                    <option value="FOOD_SOCIAL">Food & Social</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Stato</label>
+                <select formControlName="status">
+                    <option value="DA_VISITARE">Da Visitare</option>
+                    <option value="VISITATO">Visitato</option>
+                </select>
+            </div>
         </div>
-        <div>
-            <label>Stato</label>
-            <select formControlName="status">
-                <option value="DA_VISITARE">Da Visitare</option>
-                <option value="VISITATO">Visitato</option>
-            </select>
+
+        <!-- Descrizione -->
+        <div class="form-group">
+            <label>Descrizione</label>
+            <textarea formControlName="description" rows="3"
+                placeholder="Aggiungi note, consigli sull'accesso o particolarità..."></textarea>
         </div>
-    </div>
 
-    <label>Descrizione</label>
-    <textarea formControlName="description" rows="3"></textarea>
+        <!-- Rating a Stelle -->
+        <div class="form-group">
+            <label>Valutazione</label>
+            <div class="star-rating">
+                <span *ngFor="let star of [1, 2, 3, 4, 5]" (click)="setRating(star)"
+                    [class.filled]="star <= spotForm.value.rating">
+                    ★
+                </span>
+            </div>
+        </div>
 
-    <!-- Rating a Stelle -->
-    <label>Rating</label>
-    <div class="star-rating">
-        <span *ngFor="let star of [1, 2, 3, 4, 5]" (click)="setRating(star)"
-            [class.filled]="star <= spotForm.value.rating">
-            ★
-        </span>
-    </div>
+        <!-- Servizi disponibili -->
+        <div class="form-group">
+            <label>Servizi disponibili</label>
+            <div class="services-input-group">
+                <select #serviceSelect (change)="addServiceFromSelect(serviceSelect)">
+                    <option value="" disabled selected>-- Aggiungi un servizio --</option>
+                    <option *ngFor="let service of availableServices" [value]="service.id">
+                        {{ service.name }}
+                    </option>
+                </select>
+            </div>
 
-    <!-- Gestione Servizi tramite Select da DB -->
-    <label>Servizi disponibili</label>
-    <div class="services-input-group">
-        <select #serviceSelect (change)="addServiceFromSelect(serviceSelect)">
-            <option value="" disabled selected>-- Seleziona un servizio --</option>
-            <option *ngFor="let service of availableServices" [value]="service.id">
-                {{ service.name }}
-            </option>
-        </select>
-    </div>
+            <div class="services-list" *ngIf="selectedServices.length > 0">
+                <span *ngFor="let service of selectedServices; let i = index" class="service-chip">
+                    {{ service.name }}
+                    <button type="button" (click)="removeService(i)">&times;</button>
+                </span>
+            </div>
+        </div>
 
-    <div class="services-list">
-        <span *ngFor="let service of selectedServices; let i = index" class="service-chip">
-            {{ service.name }}
-            <button type="button" (click)="removeService(i)">&times;</button>
-        </span>
-    </div>
+        <!-- Upload & Galleria Immagini -->
+        <div class="form-group">
+            <label>Immagini (Trascina le schede per riordinare)</label>
 
-    <!-- Galleria Immagini con Drag & Drop Nativo -->
-    <label>Galleria Immagini (Trascina per riordinare)</label>
-    <input type="file" multiple (change)="onImagesSelected($event)" accept="image/*" />
+            <div class="file-drop-zone" (click)="fileInput.click()">
+                <input #fileInput type="file" multiple (change)="onImagesSelected($event)" accept="image/*" hidden />
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">Clicca per caricare le foto dello spot</span>
+            </div>
 
-    <div class="image-preview-grid" *ngIf="images.length > 0">
-        <div *ngFor="let img of images; let i = index" class="image-card" draggable="true" (dragstart)="onDragStart(i)"
-            (dragover)="onDragOver($event)" (drop)="onDrop(i)">
+            <div class="image-preview-grid" *ngIf="images.length > 0">
+                <div *ngFor="let img of images; let i = index" class="image-card" draggable="true"
+                    (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)">
 
-            <img [src]="img.previewUrl || img.file_path" alt="Anteprima spot" />
+                    <img [src]="img.previewUrl || img.file_path" alt="Anteprima spot" />
 
-            <div class="image-overlay">
-                <span class="image-order">#{{ i + 1 }}</span>
-                <button type="button" class="btn-delete" (click)="removeImage(i)" title="Rimuovi">🗑️</button>
+                    <div class="image-overlay">
+                        <span class="image-order">#{{ i + 1 }}</span>
+                        <button type="button" class="btn-delete" (click)="removeImage(i)" title="Rimuovi">✕</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Azioni in Basso -->
     <div class="actions">
-        <button type="button" (click)="cancel.emit()">Annulla</button>
-        <button type="submit" [disabled]="spotForm.invalid" class="btn-save">Salva</button>
+        <button type="button" class="btn-cancel" (click)="cancel.emit()">Annulla</button>
+        <button type="submit" [disabled]="spotForm.invalid" class="btn-save">
+            {{ isEditMode ? 'Aggiorna Spot' : 'Salva Spot' }}
+        </button>
     </div>
 </form>

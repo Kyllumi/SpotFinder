@@ -15,6 +15,10 @@ export class SpotService {
     return this.http.get<Spot[]>(this.apiUrl);
   }
 
+  getSpotById(id: number): Observable<Spot> {
+    return this.http.get<Spot>(`${this.apiUrl}/${id}`);
+  }
+
   getSpotsInBoundingBox(box: BoundingBox): Observable<Spot[]> {
     const params = new HttpParams()
       .set('minLat', box.minLat.toString())

@@ -1,17 +1,61 @@
-<div class="spot-list">
-    <div class="spot-card" *ngFor="let spot of spots" {{console.log(spot)}}
-        [class.selected]="selectedSpotId === spot.id" (click)="spotSelected.emit(spot)">
-        <div class="card-header">
-            <h4>{{ spot.title }}</h4>
-            <span class="badge" *ngIf="spot.category">{{ spot.category }}</span>
+<div class="sidebar-container">
+  <!-- Header della Sidebar -->
+  <div class="sidebar-header">
+    <div class="header-titles">
+      <h3>Spot nelle vicinanze</h3>
+      <span class="spot-count">{{ spots.length || 0 }} posti trovati</span>
+    </div>
+  </div>
+
+  <!-- Lista degli Spot -->
+  <div class="spot-list">
+    <div class="spot-card" *ngFor="let spot of spots" [class.selected]="selectedSpotId === spot.id"
+      (click)="onCardClick(spot)">
+
+      <!-- Immagine Anteprima o Placeholder Iconico -->
+      <div class="card-media">
+        <img *ngIf="spot.spot_images && spot.spot_images.length > 0; else placeholderIcon"
+          [src]="spot.spot_images[0].file_path" [alt]="spot.title" class="card-img" />
+        <ng-template #placeholderIcon>
+          <div class="media-placeholder">
+            <span>🌲</span>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Dettagli dello Spot -->
+      <div class="card-content">
+        <div class="card-top-row">
+          <span class="category-tag" *ngIf="spot.category">{{ spot.category }}</span>
+          <span class="spot-status-dot" [class.active]="spot.status === 'ACTIVE'" [title]="spot.status || 'N/D'"></span>
         </div>
-        <div class="card-body">
-            <span>⭐ {{ spot.rating ?? '-' }}/5</span>
-            <span>📌 {{ spot.status || 'N/D' }}</span>
+
+        <h4 class="spot-title" [title]="spot.title">{{ spot.title }}</h4>
+
+        <p class="spot-description" *ngIf="spot.description">
+          {{ spot.description }}
+        </p>
+
+        <!-- Footer Card: Rating e Azione -->
+        <div class="card-footer">
+          <div class="rating-badge" [class.has-rating]="spot.rating">
+            <span class="star">★</span>
+            <span class="rating-value">{{ spot.rating ? spot.rating.toFixed(1) : 'N/D' }}</span>
+          </div>
+
+          <!-- Pulsante Dettaglio isolato dall'evento della card -->
+          <button type="button" class="view-details-btn" (click)="onDetailClick($event, spot)">
+            Vedi dettagli <span>→</span>
+          </button>
         </div>
+      </div>
     </div>
 
+    <!-- Empty State -->
     <div class="empty-state" *ngIf="!spots || spots.length === 0">
-        <p>🗺️ Nessun punto segreto in questa area.</p>
+      <div class="empty-icon">📍</div>
+      <h4>Nessun punto trovato</h4>
+      <p>Spostati sulla mappa o crea un nuovo spot per iniziare la tua esplorazione.</p>
     </div>
+  </div>
 </div>

@@ -1,128 +1,181 @@
-<div class="spot-detail-sidebar" *ngIf="spot">
+<!-- LOADER -->
+<div class="state-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Caricamento dello spot...</p>
+</div>
 
-    <!-- HERO / COVER IMAGE -->
-    <div class="hero-header">
-        <button class="btn-back" (click)="close.emit()" title="Torna alla lista">
-            ← Indietro
-        </button>
+<!-- ERRORE -->
+<div class="state-container" *ngIf="error && !loading">
+    <h2>⚠️ Impossibile caricare lo spot</h2>
+    <button class="btn-back-error" (click)="goBack()">Torna alla mappa</button>
+</div>
 
-        <ng-container *ngIf="spot.spot_images && spot.spot_images.length > 0; else noImage">
-            <img [src]="spot.spot_images[0].file_path" [alt]="spot.title" class="hero-img">
-            <span class="gallery-badge" *ngIf="spot.spot_images.length > 1">
-                📷 {{ spot.spot_images.length }}
-            </span>
-        </ng-container>
+<button class="btn-back" (click)="goBack()" title="Torna alla mappa">
+    ← Torna alla mappa
+</button>
 
-        <ng-template #noImage>
-            <div class="hero-placeholder">
-                <span>📷 Nessuna immagine</span>
-            </div>
-        </ng-template>
-    </div>
+<!-- CONTENUTO DETTAGLIO -->
+<div class="spot-detail-page" *ngIf="spot && !loading">
+    <div class="detail-card">
 
-    <!-- CORPO DEL DETTAGLIO -->
-    <div class="detail-body">
+        <!-- HERO / CAROUSEL IMAGES (STILE PARK4NIGHT) -->
+        <div class="hero-header">
 
-        <!-- INTESTAZIONE CON BADGES E STELLINE NELLA STESSA RIGA -->
-        <header class="header-section">
-            <div class="meta-inline-row">
-                <span class="category-badge">{{ spot.category }}</span>
+            <ng-container *ngIf="spot.spot_images && spot.spot_images.length > 0; else noImage">
+                <!-- Immagine corrente del Carosello -->
+                <img [src]="spot.spot_images[currentImageIndex].file_path" [alt]="spot.title" class="hero-img"
+                    (click)="openLightbox(currentImageIndex)">
 
-                <span class="status-pill" [ngClass]="spot.status.toLowerCase()">
-                    {{ spot.status.split('_').join(' ').toLowerCase() }}
-                </span>
+                <!-- Frecce di navigazione (visibili se > 1 immagine) -->
+                <button class="carousel-btn prev" *ngIf="spot.spot_images.length > 1" (click)="prevImage($event)"
+                    title="Immagine precedente">
+                    ❮
+                </button>
+                <button class="carousel-btn next" *ngIf="spot.spot_images.length > 1" (click)="nextImage($event)"
+                    title="Immagine successiva">
+                    ❯
+                </button>
 
-                <!-- Rating con 5 stelle visibili (piene / vuote) -->
-                <div class="rating-inline" *ngIf="spot.rating">
-                    <div class="stars-list">
-                        <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star-icon"
-                            [class.filled]="star <= spot.rating">
-                            ★
+                <!-- Indicatori di conteggio e Pallini (Dots) -->
+                <div class="carousel-overlay-info" *ngIf="spot.spot_images.length > 1">
+                    <span class="gallery-badge">
+                        📷 {{ currentImageIndex + 1 }} / {{ spot.spot_images.length }}
+                    </span>
+                    <div class="carousel-dots">
+                        <span *ngFor="let img of spot.spot_images; let i = index" class="dot"
+                            [class.active]="i === currentImageIndex" (click)="setImageIndex(i, $event)">
                         </span>
                     </div>
-                    <strong class="rating-val">{{ spot.rating }}/5</strong>
                 </div>
-            </div>
+            </ng-container>
 
-            <h2 class="spot-title">{{ spot.title }}</h2>
-        </header>
-
-        <!-- AZIONI RAPIDE -->
-        <div class="action-grid">
-            <a [href]="'https://www.google.com/maps/search/?api=1&query=' + spot.latitude + ',' + spot.longitude"
-                target="_blank" class="btn-action primary">
-                🗺️ Mappa
-            </a>
-            <button class="btn-action secondary" (click)="edit.emit(spot)">
-                ✏️ Modifica
-            </button>
-            <button class="btn-action danger" (click)="delete.emit(spot.id)">
-                🗑️
-            </button>
+            <ng-template #noImage>
+                <div class="hero-placeholder">
+                    <span>🌲 Nessuna immagine disponibile</span>
+                </div>
+            </ng-template>
         </div>
 
-        <!-- SEZIONE DESCRIZIONE -->
-        <section class="section">
-            <h3>Descrizione</h3>
-            <p class="description-text">
-                {{ spot.description || 'Nessuna descrizione inserita per questo spot.' }}
-            </p>
-        </section>
+        <!-- CORPO DEL DETTAGLIO -->
+        <div class="detail-body">
+            <header class="header-section">
+                <div class="meta-inline-row">
+                    <span class="category-badge" *ngIf="spot.category">{{ spot.category }}</span>
 
-        <!-- SEZIONE SERVIZI CON ICONE DIVERSIFICATE -->
-        <section class="section" *ngIf="spot.services && spot.services.length > 0">
-            <h3>Servizi disponibili</h3>
-            <div class="services-chips">
-                <div class="chip" *ngFor="let service of spot.services">
-                    <span class="chip-icon" [ngSwitch]="service.iconCode">
-                        <!-- Natura & Ombra -->
-                        <span *ngSwitchCase="'shade'">🌳</span>
-                        <span *ngSwitchCase="'water'">💧</span>
-                        <span *ngSwitchCase="'view'">⛰️</span>
-
-                        <!-- Utilità & Energia -->
-                        <span *ngSwitchCase="'power'">⚡</span>
-                        <span *ngSwitchCase="'wifi'">📶</span>
-                        <span *ngSwitchCase="'wc'">🚻</span>
-                        <span *ngSwitchCase="'shower'">🚿</span>
-                        <span *ngSwitchCase="'trash'">🗑️</span>
-
-                        <!-- Logistica & Accesso -->
-                        <span *ngSwitchCase="'parking'">🅿️</span>
-                        <span *ngSwitchCase="'picnic'">🧺</span>
-                        <span *ngSwitchCase="'fire'">🔥</span>
-                        <span *ngSwitchCase="'pets'">🐾</span>
-
-                        <!-- Fallback di default -->
-                        <span *ngSwitchDefault>📍</span>
+                    <span class="status-pill" [ngClass]="getStatusClass(spot.status)" *ngIf="spot.status">
+                        {{ getStatusLabel(spot.status) }}
                     </span>
-                    <span class="chip-label">{{ service.name }}</span>
+
+                    <div class="rating-inline" *ngIf="spot.rating">
+                        <div class="stars-list">
+                            <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star-icon"
+                                [class.filled]="star <= spot.rating">
+                                ★
+                            </span>
+                        </div>
+                        <strong class="rating-val">{{ spot.rating }}/5</strong>
+                    </div>
                 </div>
+
+                <h1 class="spot-title">{{ spot.title }}</h1>
+            </header>
+
+            <!-- AZIONI RAPIDE -->
+            <div class="action-grid">
+                <a [href]="'https://www.google.com/maps/search/?api=1&query=' + spot.latitude + ',' + spot.longitude"
+                    target="_blank" rel="noopener noreferrer" class="btn-action primary">
+                    🗺️ Apri Mappa
+                </a>
+                <a [routerLink]="['/spots', spot.id, 'edit']" class="btn-action secondary">
+                    ✏️ Modifica
+                </a>
+                <button class="btn-action danger" (click)="onDelete()" title="Elimina spot">
+                    🗑️ Elimina
+                </button>
             </div>
-        </section>
 
-        <!-- METADATI E GPS -->
-        <section class="section info-section">
-            <h3>Dettagli Posizione</h3>
+            <!-- SEZIONE DESCRIZIONE -->
+            <section class="section">
+                <h3>Descrizione</h3>
+                <p class="description-text">
+                    {{ spot.description || 'Nessuna descrizione inserita per questo spot.' }}
+                </p>
+            </section>
 
-            <div class="info-card">
-                <div class="info-item">
-                    <span class="label">📍 Coords</span>
-                    <code
-                        class="coords-tag">{{ spot.latitude | number:'1.4-4' }}, {{ spot.longitude | number:'1.4-4' }}</code>
+            <!-- SEZIONE GALLERIA MINIATURE (STILE PARK4NIGHT) -->
+            <section class="section" *ngIf="spot.spot_images && spot.spot_images.length > 1">
+                <h3>Galleria foto ({{ spot.spot_images.length }})</h3>
+                <div class="thumbnails-grid">
+                    <div class="thumb-item" *ngFor="let img of spot.spot_images; let i = index"
+                        [class.active]="i === currentImageIndex" (click)="setImageIndex(i)">
+                        <img [src]="img.file_path" [alt]="'Foto ' + (i + 1)">
+                    </div>
                 </div>
+            </section>
 
-                <!-- <div class="info-item" *ngIf="spot.visited_at">
-                    <span class="label">📅 Visitato</span>
-                    <span class="val">{{ spot.visited_at | date:'dd MMM yyyy' }}</span>
-                </div> -->
-
-                <div class="info-item" *ngIf="spot.created_at">
-                    <span class="label">🕒 Creato</span>
-                    <span class="val">{{ spot.created_at | date:'dd/MM/yyyy' }}</span>
+            <!-- SEZIONE SERVIZI -->
+            <section class="section" *ngIf="spot.services && spot.services.length > 0">
+                <h3>Servizi disponibili</h3>
+                <div class="services-chips">
+                    <div class="chip" *ngFor="let service of spot.services">
+                        <span class="chip-icon" [ngSwitch]="service.icon_code">
+                            <span *ngSwitchCase="'shade'">🌳</span>
+                            <span *ngSwitchCase="'water'">💧</span>
+                            <span *ngSwitchCase="'view'">⛰️</span>
+                            <span *ngSwitchCase="'power'">⚡</span>
+                            <span *ngSwitchCase="'wifi'">📶</span>
+                            <span *ngSwitchCase="'wc'">🚻</span>
+                            <span *ngSwitchCase="'shower'">🚿</span>
+                            <span *ngSwitchCase="'trash'">🗑️</span>
+                            <span *ngSwitchCase="'parking'">🅿️</span>
+                            <span *ngSwitchCase="'picnic'">🧺</span>
+                            <span *ngSwitchCase="'fire'">🔥</span>
+                            <span *ngSwitchCase="'pets'">🐾</span>
+                            <span *ngSwitchDefault>📍</span>
+                        </span>
+                        <span class="chip-label">{{ service.name }}</span>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
+            <!-- METADATI E GPS -->
+            <section class="section info-section">
+                <h3>Dettagli Posizione</h3>
+                <div class="info-card">
+                    <div class="info-item">
+                        <span class="label">📍 Coords</span>
+                        <code class="coords-tag">
+                            {{ spot.latitude | number:'1.4-4' }}, {{ spot.longitude | number:'1.4-4' }}
+                        </code>
+                    </div>
+
+                    <div class="info-item" *ngIf="spot.visited_at">
+                        <span class="label">🗓️ Visitato il</span>
+                        <span class="val">{{ spot.visited_at | date:'dd/MM/yyyy' }}</span>
+                    </div>
+
+                    <div class="info-item" *ngIf="spot.created_at">
+                        <span class="label">🕒 Creato</span>
+                        <span class="val">{{ spot.created_at | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODALE LIGHTBOX SCHERMO INTERO -->
+<div class="lightbox-modal" *ngIf="isLightboxOpen && spot?.spot_images?.length" (click)="closeLightbox()">
+    <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <img [src]="spot!.spot_images[currentImageIndex].file_path" [alt]="spot!.title">
+
+        <button class="lightbox-btn prev" *ngIf="spot!.spot_images.length > 1" (click)="prevImage($event)">❮</button>
+        <button class="lightbox-btn next" *ngIf="spot!.spot_images.length > 1" (click)="nextImage($event)">❯</button>
+
+        <div class="lightbox-counter">
+            {{ currentImageIndex + 1 }} / {{ spot!.spot_images.length }}
+        </div>
     </div>
 </div>
