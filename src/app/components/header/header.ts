@@ -13,12 +13,18 @@ export class HeaderComponent {
   @Output() createSpot = new EventEmitter<void>();
   @Output() search = new EventEmitter<string>();
   @Output() filterFavorites = new EventEmitter<void>();
+  @Output() navigate = new EventEmitter<'home' | 'map'>();
   
   isMenuOpen = false;
   searchQuery = '';
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  onNavigate(view: 'home' | 'map'): void {
+    this.navigate.emit(view);
+    this.isMenuOpen = false;
   }
 
   onSearch(): void {

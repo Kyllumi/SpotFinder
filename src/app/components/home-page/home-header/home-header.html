@@ -1,0 +1,24 @@
+<header class="home-top-bar">
+  <div class="brand-section">
+    <button class="hamburger-btn" (click)="toggleMenu()" aria-label="Toggle Menu">
+      ☰
+    </button>
+    <h1 (click)="onNavigate('home')">🌲 SPOTFINDER</h1>
+
+    <!-- Menu a tendina -->
+    <div class="dropdown-menu" *ngIf="isMenuOpen">
+      <a class="menu-item" (click)="onNavigate('home')">🏠 Home</a>
+      <a class="menu-item" (click)="onNavigate('map')">🗺️ Mappa</a>
+      <a class="menu-item" (click)="toggleMenu()">❓ FAQ</a>
+      <hr class="menu-divider" />
+      <a class="menu-item" (click)="toggleMenu()">👤 Il mio account</a>
+    </div>
+  </div>
+
+  <!-- Pulsante rapido per la Mappa -->
+  <div class="nav-actions">
+    <button class="map-btn" (click)="onNavigate('map')">
+      🗺️ Vai alla Mappa
+    </button>
+  </div>
+</header>
