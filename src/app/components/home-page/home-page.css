@@ -11,6 +11,7 @@
   width: 100%;
 }
 
+/* HERO SECTION */
 .hero-section {
   position: relative;
   height: 60vh;
@@ -42,16 +43,15 @@
 }
 
 .hero-content h1 {
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  margin-bottom: 12px;
-  line-height: 1.2;
+  margin-bottom: 8px;
 }
 
 .hero-subtitle {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #cbd5e1;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .search-card {
@@ -65,7 +65,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 .search-input-wrapper {
@@ -86,6 +85,20 @@
   font-size: 0.95rem;
 }
 
+svg {
+  max-width: 24px;
+  max-height: 24px;
+}
+
+.svg-icon {
+  width: 20px !important;
+  height: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
 .search-btn {
   background: #0284c7;
   border: none;
@@ -96,11 +109,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
-}
-
-.search-btn:hover {
-  background: #0369a1;
 }
 
 .map-link-btn {
@@ -116,15 +124,9 @@
   justify-content: center;
   gap: 8px;
   font-size: 0.95rem;
-  transition: all 0.2s;
 }
 
-.map-link-btn:hover {
-  background: rgba(56, 189, 248, 0.1);
-  border-color: #38bdf8;
-}
-
-/* CAROSELLI CON ICONE VETTORIALI */
+/* CAROSELLI */
 .carousel-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -152,11 +154,6 @@
   font-weight: 700;
 }
 
-.title-with-icon svg {
-  width: 22px;
-  height: 22px;
-}
-
 .icon-flame { color: #f97316; }
 .icon-bookmark { color: #eab308; }
 .icon-check { color: #22c55e; }
@@ -168,28 +165,65 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
 }
 
-.see-all-btn:hover {
-  opacity: 0.8;
+/* CONTENITORE CAROSELLO CON FRECCE */
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
+
+/* FRECCETTE DI SCORRIMENTO */
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid #334155;
+  color: #f8fafc;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.nav-arrow:hover {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #fff;
+}
+
+.prev-arrow { left: -14px; }
+.next-arrow { right: -14px; }
 
 .carousel-track {
   display: flex;
   gap: 18px;
   overflow-x: auto;
-  padding-bottom: 12px;
-  scroll-behavior: smooth;
+  padding: 8px 4px 16px 4px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: 100%;
 }
 
 .carousel-track::-webkit-scrollbar {
-  height: 6px;
+  display: none;
 }
 
-.carousel-track::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
+.carousel-track:active {
+  cursor: grabbing;
 }
 
 .spot-card {
@@ -199,13 +233,14 @@
   border: 1px solid #334155;
   border-radius: 14px;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s;
+  cursor: default;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .spot-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: #475569;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
 }
 
 .card-image {
@@ -218,6 +253,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .badge-category, .badge-status {
@@ -229,7 +267,6 @@
   font-size: 0.75rem;
   font-weight: 600;
   background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(4px);
 }
 
 .status-tovisit { background: #eab308; color: #0f172a; }
@@ -239,11 +276,17 @@
   padding: 14px;
 }
 
-.card-info h3 {
+.clickable-title {
   margin: 0 0 6px;
   font-size: 1.05rem;
   color: #f8fafc;
-  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.clickable-title:hover {
+  color: #38bdf8;
 }
 
 .card-info p {
@@ -258,6 +301,8 @@
 .card-footer {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
 }
 
 .rating {
@@ -266,12 +311,43 @@
   gap: 4px;
   font-size: 0.8rem;
   color: #facc15;
-  font-weight: 600;
 }
 
 .star-icon {
-  width: 14px;
-  height: 14px;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* PULSANTE "VAI ALLO SPOT" */
+.spot-action-btn {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.spot-action-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  transform: translateX(2px);
+}
+
+.spot-action-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.spot-action-btn:hover svg {
+  transform: translateX(2px);
 }
 
 .empty-state {
