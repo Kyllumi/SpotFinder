@@ -15,20 +15,22 @@ import { HomePageComponent } from './components/home-page/home-page';
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule, 
-    HeaderComponent, 
-    MapComponent, 
-    SpotListComponent, 
-    SpotDetailComponent, 
+    CommonModule,
+    HeaderComponent,
+    MapComponent,
+    SpotListComponent,
+    SpotDetailComponent,
     SpotFormComponent,
-    HomePageComponent
+    HomePageComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class AppComponent implements OnInit {
-  currentView: string = 'home';
+  // Gestione Vista
+  currentView: 'home' | 'map' = 'home';
 
+  // Stato Dati
   spots: Spot[] = [];
   servicesList: Service[] = [];
   selectedSpot: Spot | null = null;
@@ -39,31 +41,24 @@ export class AppComponent implements OnInit {
 
   constructor(
     private spotService: SpotService,
-    private http: HttpClient
+    private http: HttpClient,
   ) {}
 
   ngOnInit(): void {
-    // Caricamento spot iniziali
-    this.loadSpots();
-
-    // Caricamento servizi dal DB
+    // Caricamento servizi dal backend
     this.http.get<Service[]>('http://localhost:8080/services').subscribe({
       next: (data) => {
         this.servicesList = data;
         console.log('Servizi caricati dal DB:', this.servicesList);
       },
-      error: (err) => console.error('Errore caricamento servizi:', err)
+      error: (err) => console.error('Errore caricamento servizi:', err),
     });
   }
 
   onNavigate(view: string): void {
-    this.currentView = view;
-  }
-
-  onSelectSpot(spot: Spot): void {
-    this.selectedSpot = spot;
-    this.showForm = false;
-    this.currentView = 'map';
+    if (view === 'home' || view === 'map') {
+      this.currentView = view;
+    }
   }
 
   onBoundsChanged(box: BoundingBox): void {
@@ -114,6 +109,11 @@ export class AppComponent implements OnInit {
   private finishSave(): void {
     this.closeForm();
     this.loadSpots();
+  }
+
+  onSelectSpot(spot: Spot): void {
+    this.selectedSpot = spot;
+    this.currentView = 'map'; // Passa alla vista mappa per mostrare il dettaglio
   }
 
   onDeleteSpot(id: number): void {
