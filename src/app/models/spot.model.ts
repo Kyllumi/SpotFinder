@@ -4,13 +4,14 @@ export type Status = string;
 export interface Service {
   id: number;
   name: string;
+  icon_code?: string;
   iconCode?: string;
 }
 
 export interface SpotImage {
-  id: number;
+  id?: number;
   file_path: string;
-  uploadedAt: string;
+  uploaded_at?: string;
 }
 
 export interface Spot {
@@ -35,10 +36,12 @@ export interface SpotDTO {
   latitude: number;
   longitude: number;
   rating?: number;
-  category: Category;
-  status: Status;
+  category: string;
+  status: string;
   visited_at?: string;
-  serviceIds?: number[];
+  created_at?: string;
+  services: Service[];
+  spot_images?: any[];
 }
 
 export interface BoundingBox {

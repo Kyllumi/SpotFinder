@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Spot, SpotDTO, BoundingBox } from './models/spot.model';
+import { HttpClient } from '@angular/common/http'; // 1. Importa HttpClient
+import { Spot, SpotDTO, BoundingBox, Service } from './models/spot.model'; // 2. Importa Service
 import { SpotService } from './services/spot';
 
 import { HeaderComponent } from './components/header/header';
@@ -23,15 +24,31 @@ import { SpotFormComponent } from './components/spot-form/spot-form';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   spots: Spot[] = [];
-  selectedSpot: Spot | null = null; // Tipizzazione esplicita per evitare l'errore 'never'
+  servicesList: Service[] = []; // Corretto in Service[]
+  selectedSpot: Spot | null = null;
   spotToEdit: Spot | null = null;
   clickedCoords: { lat: number; lng: number } | null = null;
   showForm = false;
   currentBox!: BoundingBox;
 
-  constructor(private spotService: SpotService) {}
+  // 3. Iniettato 'http: HttpClient' nel costruttore
+  constructor(
+    private spotService: SpotService,
+    private http: HttpClient
+  ) {}
+
+  ngOnInit(): void {
+    // Caricamento servizi dal backend
+    this.http.get<Service[]>('http://localhost:8080/services').subscribe({
+      next: (data) => {
+        this.servicesList = data;
+        console.log('Servizi caricati dal DB:', this.servicesList);
+      },
+      error: (err) => console.error('Errore caricamento servizi:', err)
+    });
+  }
 
   onBoundsChanged(box: BoundingBox): void {
     this.currentBox = box;

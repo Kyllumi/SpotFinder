@@ -7,6 +7,7 @@
         *ngIf="showForm" 
         [spotToEdit]="spotToEdit" 
         [initialCoords]="clickedCoords"
+        [availableServices]="servicesList"
         (save)="onSaveSpot($event)" 
         (cancel)="closeForm()">
       </app-spot-form>
