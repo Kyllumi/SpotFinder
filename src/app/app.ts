@@ -8,6 +8,7 @@ import { MapComponent } from './components/map/map';
 import { SpotListComponent } from './components/spot-list/spot-list';
 import { SpotDetailComponent } from './components/spot-detail/spot-detail';
 import { SpotFormComponent } from './components/spot-form/spot-form';
+import { HomePageComponent } from './components/home-page/home-page';
 
 @Component({
   selector: 'app-root',
@@ -18,20 +19,27 @@ import { SpotFormComponent } from './components/spot-form/spot-form';
     MapComponent, 
     SpotListComponent, 
     SpotDetailComponent, 
-    SpotFormComponent
+    SpotFormComponent,
+    HomePageComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class AppComponent {
+  currentView: 'home' | 'map' = 'home'; // Mostra la home all'avvio
+
   spots: Spot[] = [];
-  selectedSpot: Spot | null = null; // Tipizzazione esplicita per evitare l'errore 'never'
+  selectedSpot: Spot | null = null;
   spotToEdit: Spot | null = null;
   clickedCoords: { lat: number; lng: number } | null = null;
   showForm = false;
   currentBox!: BoundingBox;
 
   constructor(private spotService: SpotService) {}
+
+  onNavigate(view: 'home' | 'map'): void {
+    this.currentView = view;
+  }
 
   onBoundsChanged(box: BoundingBox): void {
     this.currentBox = box;
