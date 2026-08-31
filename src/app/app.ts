@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http'; // 1. Importa HttpClient
-import { Spot, SpotDTO, BoundingBox, Service } from './models/spot.model'; // 2. Importa Service
+import { HttpClient } from '@angular/common/http';
+import { Spot, SpotDTO, BoundingBox, Service } from './models/spot.model';
 import { SpotService } from './services/spot';
 
 import { HeaderComponent } from './components/header/header';
@@ -27,26 +27,26 @@ import { HomePageComponent } from './components/home-page/home-page';
   styleUrl: './app.css',
 })
 export class AppComponent implements OnInit {
-  spots: Spot[] = [];
-  servicesList: Service[] = []; // Corretto in Service[]
-export class AppComponent {
-  currentView: 'home' | 'map' = 'home'; // Mostra la home all'avvio
+  currentView: string = 'home';
 
   spots: Spot[] = [];
+  servicesList: Service[] = [];
   selectedSpot: Spot | null = null;
   spotToEdit: Spot | null = null;
   clickedCoords: { lat: number; lng: number } | null = null;
   showForm = false;
   currentBox!: BoundingBox;
 
-  // 3. Iniettato 'http: HttpClient' nel costruttore
   constructor(
     private spotService: SpotService,
     private http: HttpClient
   ) {}
 
   ngOnInit(): void {
-    // Caricamento servizi dal backend
+    // Caricamento spot iniziali
+    this.loadSpots();
+
+    // Caricamento servizi dal DB
     this.http.get<Service[]>('http://localhost:8080/services').subscribe({
       next: (data) => {
         this.servicesList = data;
@@ -56,8 +56,14 @@ export class AppComponent {
     });
   }
 
-  onNavigate(view: 'home' | 'map'): void {
+  onNavigate(view: string): void {
     this.currentView = view;
+  }
+
+  onSelectSpot(spot: Spot): void {
+    this.selectedSpot = spot;
+    this.showForm = false;
+    this.currentView = 'map';
   }
 
   onBoundsChanged(box: BoundingBox): void {

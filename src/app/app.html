@@ -1,21 +1,12 @@
 <div class="app-container" [class.map-view]="currentView === 'map'">
   <!-- Vista 1: Home Page -->
-  <app-home-page 
-    *ngIf="currentView === 'home'" 
+  <app-home-page
+    *ngIf="currentView === 'home'"
     [spots]="spots"
-    (navigate)="onNavigate($event)">
+    (navigate)="onNavigate($event)"
+    (selectSpot)="onSelectSpot($event)">
   </app-home-page>
 
-  <div class="main-content">
-    <aside class="sidebar">
-      <app-spot-form 
-        *ngIf="showForm" 
-        [spotToEdit]="spotToEdit" 
-        [initialCoords]="clickedCoords"
-        [availableServices]="servicesList"
-        (save)="onSaveSpot($event)" 
-        (cancel)="closeForm()">
-      </app-spot-form>
   <!-- Vista 2: Mappa e Sidebar -->
   <ng-container *ngIf="currentView === 'map'">
     <app-header 
