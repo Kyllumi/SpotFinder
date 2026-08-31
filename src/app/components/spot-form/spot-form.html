@@ -19,9 +19,16 @@
         <div>
             <label>Categoria</label>
             <select formControlName="category">
-                <option value="PESCA">Pesca</option>
-                <option value="SOSTA">Sosta</option>
-                <option value="PANORAMICO">Panoramico</option>
+                <option value="VISTA">Vista & Fotografia</option>
+                <option value="NATURA">Natura & Wild</option>
+                <option value="PESCA">Pesca & Water Spot</option>
+                <option value="VANLIFE">Vanlife & Overnight</option>
+                <option value="SPORT">Outdoor & Sport</option>
+                <option value="RELAX">Relax & Picnic</option>
+                <option value="URBEX">Urbano & Urbex</option>
+                <option value="DOG_FRIENDLY">Dog Friendly</option>
+                <option value="SMART_WORKING">Smart Working Outdoor</option>
+                <option value="FOOD_SOCIAL">Food & Social</option>
             </select>
         </div>
         <div>
@@ -33,8 +40,52 @@
         </div>
     </div>
 
-    <label>Note</label>
+    <label>Descrizione</label>
     <textarea formControlName="description" rows="3"></textarea>
+
+    <!-- Rating a Stelle -->
+    <label>Rating</label>
+    <div class="star-rating">
+        <span *ngFor="let star of [1, 2, 3, 4, 5]" (click)="setRating(star)"
+            [class.filled]="star <= spotForm.value.rating">
+            ★
+        </span>
+    </div>
+
+    <!-- Gestione Servizi tramite Select da DB -->
+    <label>Servizi disponibili</label>
+    <div class="services-input-group">
+        <select #serviceSelect (change)="addServiceFromSelect(serviceSelect)">
+            <option value="" disabled selected>-- Seleziona un servizio --</option>
+            <option *ngFor="let service of availableServices" [value]="service.id">
+                {{ service.name }}
+            </option>
+        </select>
+    </div>
+
+    <div class="services-list">
+        <span *ngFor="let service of selectedServices; let i = index" class="service-chip">
+            {{ service.name }}
+            <button type="button" (click)="removeService(i)">&times;</button>
+        </span>
+    </div>
+
+    <!-- Galleria Immagini con Drag & Drop Nativo -->
+    <label>Galleria Immagini (Trascina per riordinare)</label>
+    <input type="file" multiple (change)="onImagesSelected($event)" accept="image/*" />
+
+    <div class="image-preview-grid" *ngIf="images.length > 0">
+        <div *ngFor="let img of images; let i = index" class="image-card" draggable="true" (dragstart)="onDragStart(i)"
+            (dragover)="onDragOver($event)" (drop)="onDrop(i)">
+
+            <img [src]="img.previewUrl || img.file_path" alt="Anteprima spot" />
+
+            <div class="image-overlay">
+                <span class="image-order">#{{ i + 1 }}</span>
+                <button type="button" class="btn-delete" (click)="removeImage(i)" title="Rimuovi">🗑️</button>
+            </div>
+        </div>
+    </div>
 
     <div class="actions">
         <button type="button" (click)="cancel.emit()">Annulla</button>

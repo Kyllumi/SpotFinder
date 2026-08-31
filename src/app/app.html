@@ -6,6 +6,16 @@
     (navigate)="onNavigate($event)">
   </app-home-page>
 
+  <div class="main-content">
+    <aside class="sidebar">
+      <app-spot-form 
+        *ngIf="showForm" 
+        [spotToEdit]="spotToEdit" 
+        [initialCoords]="clickedCoords"
+        [availableServices]="servicesList"
+        (save)="onSaveSpot($event)" 
+        (cancel)="closeForm()">
+      </app-spot-form>
   <!-- Vista 2: Mappa e Sidebar -->
   <ng-container *ngIf="currentView === 'map'">
     <app-header 
