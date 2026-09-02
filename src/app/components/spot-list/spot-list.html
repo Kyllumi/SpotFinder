@@ -27,7 +27,7 @@
       <div class="card-content">
         <div class="card-top-row">
           <span class="category-tag" *ngIf="spot.category">{{ spot.category }}</span>
-          <span class="spot-status-dot" [class.active]="spot.status === 'ACTIVE'" [title]="spot.status || 'N/D'"></span>
+          <span class="spot-status-dot" [class.active]="spot.status === 'VISITATO'" [title]="spot.status || 'N/D'"></span>
         </div>
 
         <h4 class="spot-title" [title]="spot.title">{{ spot.title }}</h4>

@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router'; // 1. Importa ActivatedRoute
 import { Subscription } from 'rxjs';
 import { Spot, SpotDTO, BoundingBox, Service } from '../../models/spot.model';
 import { SpotService } from '../../services/spot';
@@ -28,13 +28,15 @@ export class MapViewComponent implements OnInit, OnDestroy {
   currentBox!: BoundingBox;
 
   private openFormSub!: Subscription;
+  private routeSub!: Subscription; // Subscription per i parametri URL
 
   constructor(
     private spotService: SpotService,
     private uiStateService: UiStateService,
     private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private route: ActivatedRoute, // 2. Inietta ActivatedRoute
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +52,53 @@ export class MapViewComponent implements OnInit, OnDestroy {
     if (this.openFormSub) {
       this.openFormSub.unsubscribe();
     }
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+    }
+  }
+
+  loadSpots(): void {
+    this.spotService.getAllSpots().subscribe({
+      next: (data) => {
+        this.spots = data || [];
+
+        // 3. Ascolta i queryParams non appena gli spot sono caricati
+        this.checkQueryParams();
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Errore caricamento spot:', err),
+    });
+  }
+
+  // Legge lat, lng e id dall'URL se si proviene dalla HomePage
+  private checkQueryParams(): void {
+    this.routeSub = this.route.queryParams.subscribe((params) => {
+      const lat = parseFloat(params['lat']);
+      const lng = parseFloat(params['lng']);
+      const spotId = params['id'];
+
+      if (!isNaN(lat) && !isNaN(lng)) {
+        // Cerca lo spot corrispondente nella lista caricata
+        const targetSpot =
+          this.spots.find((s) => s.id == spotId) ||
+          ({
+            id: spotId,
+            latitude: lat,
+            longitude: lng,
+          } as Spot);
+
+        // Imposta lo spot selezionato in modo che app-map riceva le coordinate
+        this.selectedSpot = targetSpot;
+
+        // Se siamo su schermi piccoli chiude la sidebar per mostrare direttamente il punto
+        if (window.innerWidth <= 768) {
+          this.isSidebarOpen = false;
+        }
+
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   toggleSidebar(): void {
@@ -64,16 +113,6 @@ export class MapViewComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Errore caricamento servizi:', err),
-    });
-  }
-
-  loadSpots(): void {
-    this.spotService.getAllSpots().subscribe({
-      next: (data) => {
-        this.spots = data || [];
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Errore caricamento spot:', err),
     });
   }
 
@@ -120,19 +159,16 @@ export class MapViewComponent implements OnInit, OnDestroy {
     this.loadSpots();
   }
 
-  // 1. CLICK SULLA CARD: Seleziona lo spot, inquadra il pin sulla mappa e chiude la sidebar se siamo su mobile
   onSpotCardClick(spot: Spot): void {
     this.selectedSpot = spot;
-    
-    // Su schermi piccoli chiude la sidebar per mostrare la mappa centrata sul pin
+
     if (window.innerWidth <= 768) {
       this.isSidebarOpen = false;
     }
-    
+
     this.cdr.detectChanges();
   }
 
-  // 2. CLICK SU "VAI AL DETTAGLIO": Naviga verso la rotta dedicata
   onGoToDetail(spot: Spot): void {
     if (spot && spot.id) {
       this.router.navigate(['/spots', spot.id]);
