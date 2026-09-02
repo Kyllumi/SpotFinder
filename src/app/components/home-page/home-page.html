@@ -4,20 +4,48 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <h1>Trova e condividi i migliori spot per la tua avventura</h1>
-      <p class="hero-subtitle">Scopri luoghi fantastici, salva i tuoi posti preferiti e pianifica il tuo prossimo
-        viaggio.</p>
+      <p class="hero-subtitle">
+        Scopri luoghi fantastici, salva i tuoi posti preferiti e pianifica il tuo prossimo viaggio.
+      </p>
 
       <div class="search-card">
         <div class="search-input-wrapper">
           <input type="text" placeholder="Città, paese, indirizzo..." [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()" />
-          <button class="search-btn" (click)="onSearch()">
+            (input)="onSearchInput()" (keydown)="onKeyDown($event)" (focus)="onSearchInput()"
+            aria-label="Cerca spot per località" autocomplete="off" />
+          <button class="search-btn" (click)="onSearch()" aria-label="Esegui ricerca">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </button>
+
+          <!-- Dropdown Menu dei Suggerimenti -->
+          <ul class="suggestions-dropdown" *ngIf="showSuggestions">
+            <li *ngFor="let item of filteredSuggestions; let i = index" [class.active]="i === selectedIndex"
+              (click)="selectSuggestion(item)">
+
+              <!-- Icona per Spot DB -->
+              <svg *ngIf="item.type === 'spot'" class="svg-icon icon-pin" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+
+              <!-- Icona per Località OpenStreetMap -->
+              <svg *ngIf="item.type === 'location'" class="svg-icon icon-globe" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                </path>
+              </svg>
+
+              <span class="suggestion-text">{{ item.label }}</span>
+            </li>
+          </ul>
         </div>
+
         <button type="button" class="map-link-btn" (click)="onOpenMap()">
           <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
@@ -30,11 +58,11 @@
     </div>
   </section>
 
-  <!-- Sezione Caroselli Spot -->
-  <section class="carousel-container">
+  <!-- Sezioni Caroselli Spot -->
+  <main class="carousel-container">
 
-    <!-- 1. Ultimi Spot Aggiunti -->
-    <div class="carousel-section">
+    <!-- Sezione 1: Ultimi Spot -->
+    <section class="carousel-section">
       <div class="section-header">
         <h2 class="title-with-icon">
           <svg class="svg-icon icon-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,14 +75,12 @@
       </div>
 
       <div class="carousel-wrapper">
-        <button class="nav-arrow prev-arrow" (click)="scrollCarousel(track1, 'left')" [disabled]="isLoading">‹</button>
-        <div #track1 class="carousel-track" (mousedown)="startDragging($event, track1)"
-          (mouseleave)="stopDragging(track1)" (mouseup)="stopDragging(track1)"
-          (mousemove)="moveDragging($event, track1)">
+        <button class="nav-arrow prev-arrow" (click)="scrollCarousel(track1, 'left')" [disabled]="isLoading"
+          aria-label="Scorri a sinistra">‹</button>
 
-          <!-- STATE 1: Skeleton Loader -->
+        <div #track1 class="carousel-track" (mousedown)="startDragging($event, track1)">
           <ng-container *ngIf="isLoading">
-            <div class="spot-card skeleton-card" *ngFor="let i of skeletonCards">
+            <div class="spot-card skeleton-card" *ngFor="let item of skeletonCards">
               <div class="card-image skeleton-box"></div>
               <div class="card-info">
                 <div class="skeleton-box skeleton-text title"></div>
@@ -67,19 +93,19 @@
             </div>
           </ng-container>
 
-          <!-- STATE 2: Dati Reali -->
           <ng-container *ngIf="!isLoading">
-            <div class="spot-card" *ngFor="let spot of latestSpots">
-              <div class="card-image">
+            <article class="spot-card" *ngFor="let spot of latestSpots">
+              <div class="card-image" (click)="onGoToDetail(spot, $event)">
                 <img
                   [src]="spot.spot_images?.[0]?.file_path || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=400'"
-                  [alt]="spot.title" draggable="false" />
+                  [alt]="spot.title" loading="lazy" draggable="false" />
                 <span class="badge-category" *ngIf="spot.category">{{ spot.category }}</span>
               </div>
+
               <div class="card-info">
-                <!-- Click sul titolo -> Dettaglio dello Spot -->
-                <h3 class="clickable-title" (click)="onGoToDetail(spot)">{{ spot.title }}</h3>
+                <h3 class="clickable-title" (click)="onGoToDetail(spot, $event)">{{ spot.title }}</h3>
                 <p>{{ spot.description || 'Nessuna descrizione disponibile.' }}</p>
+
                 <div class="card-footer">
                   <span class="rating" *ngIf="spot.rating">
                     <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -89,8 +115,8 @@
                     </svg>
                     {{ spot.rating }}/5
                   </span>
-                  <!-- Click sul pulsante -> Centra sulla Mappa -->
-                  <button class="spot-action-btn" (click)="onOpenMapWithSpot(spot)">
+
+                  <button class="spot-action-btn" (click)="onOpenMapWithSpot(spot, $event)">
                     <span>Vai allo spot</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       stroke-width="2.5">
@@ -99,17 +125,19 @@
                   </button>
                 </div>
               </div>
-            </div>
+            </article>
+
             <div class="empty-state" *ngIf="latestSpots.length === 0">Nessun luogo trovato.</div>
           </ng-container>
-
         </div>
-        <button class="nav-arrow next-arrow" (click)="scrollCarousel(track1, 'right')" [disabled]="isLoading">›</button>
-      </div>
-    </div>
 
-    <!-- 2. Da Visitare -->
-    <div class="carousel-section">
+        <button class="nav-arrow next-arrow" (click)="scrollCarousel(track1, 'right')" [disabled]="isLoading"
+          aria-label="Scorri a destra">›</button>
+      </div>
+    </section>
+
+    <!-- Sezione 2: Spot Da Visitare -->
+    <section class="carousel-section">
       <div class="section-header">
         <h2 class="title-with-icon">
           <svg class="svg-icon icon-bookmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -121,14 +149,12 @@
       </div>
 
       <div class="carousel-wrapper">
-        <button class="nav-arrow prev-arrow" (click)="scrollCarousel(track2, 'left')" [disabled]="isLoading">‹</button>
-        <div #track2 class="carousel-track" (mousedown)="startDragging($event, track2)"
-          (mouseleave)="stopDragging(track2)" (mouseup)="stopDragging(track2)"
-          (mousemove)="moveDragging($event, track2)">
+        <button class="nav-arrow prev-arrow" (click)="scrollCarousel(track2, 'left')" [disabled]="isLoading"
+          aria-label="Scorri a sinistra">‹</button>
 
-          <!-- STATE 1: Skeleton Loader -->
+        <div #track2 class="carousel-track" (mousedown)="startDragging($event, track2)">
           <ng-container *ngIf="isLoading">
-            <div class="spot-card skeleton-card" *ngFor="let i of skeletonCards">
+            <div class="spot-card skeleton-card" *ngFor="let item of skeletonCards">
               <div class="card-image skeleton-box"></div>
               <div class="card-info">
                 <div class="skeleton-box skeleton-text title"></div>
@@ -141,18 +167,19 @@
             </div>
           </ng-container>
 
-          <!-- STATE 2: Dati Reali -->
           <ng-container *ngIf="!isLoading">
-            <div class="spot-card" *ngFor="let spot of toVisitSpots">
-              <div class="card-image">
+            <article class="spot-card" *ngFor="let spot of toVisitSpots">
+              <div class="card-image" (click)="onGoToDetail(spot, $event)">
                 <img
                   [src]="spot.spot_images?.[0]?.file_path || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=400'"
-                  [alt]="spot.title" draggable="false" />
+                  [alt]="spot.title" loading="lazy" draggable="false" />
                 <span class="badge-status status-tovisit">Da Visitare</span>
               </div>
+
               <div class="card-info">
-                <h3 class="clickable-title" (click)="onOpenMapWithSpot(spot, $event)">{{ spot.title }}</h3>
+                <h3 class="clickable-title" (click)="onGoToDetail(spot, $event)">{{ spot.title }}</h3>
                 <p>{{ spot.description || 'Aggiunto alla lista dei desideri.' }}</p>
+
                 <div class="card-footer">
                   <button class="spot-action-btn" (click)="onOpenMapWithSpot(spot, $event)">
                     <span>Vai allo spot</span>
@@ -163,17 +190,19 @@
                   </button>
                 </div>
               </div>
-            </div>
+            </article>
+
             <div class="empty-state" *ngIf="toVisitSpots.length === 0">Nessun posto salvato da visitare.</div>
           </ng-container>
-
         </div>
-        <button class="nav-arrow next-arrow" (click)="scrollCarousel(track2, 'right')" [disabled]="isLoading">›</button>
-      </div>
-    </div>
 
-    <!-- 3. Spot Visitati -->
-    <div class="carousel-section">
+        <button class="nav-arrow next-arrow" (click)="scrollCarousel(track2, 'right')" [disabled]="isLoading"
+          aria-label="Scorri a destra">›</button>
+      </div>
+    </section>
+
+    <!-- Sezione 3: Spot Visitati -->
+    <section class="carousel-section">
       <div class="section-header">
         <h2 class="title-with-icon">
           <svg class="svg-icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -186,14 +215,12 @@
       </div>
 
       <div class="carousel-wrapper">
-        <button class="nav-arrow prev-arrow" (click)="scrollCarousel(track3, 'left')" [disabled]="isLoading">‹</button>
-        <div #track3 class="carousel-track" (mousedown)="startDragging($event, track3)"
-          (mouseleave)="stopDragging(track3)" (mouseup)="stopDragging(track3)"
-          (mousemove)="moveDragging($event, track3)">
+        <button class="nav-arrow prev-arrow" (click)="scrollCarousel(track3, 'left')" [disabled]="isLoading"
+          aria-label="Scorri a sinistra">‹</button>
 
-          <!-- STATE 1: Skeleton Loader -->
+        <div #track3 class="carousel-track" (mousedown)="startDragging($event, track3)">
           <ng-container *ngIf="isLoading">
-            <div class="spot-card skeleton-card" *ngFor="let i of skeletonCards">
+            <div class="spot-card skeleton-card" *ngFor="let item of skeletonCards">
               <div class="card-image skeleton-box"></div>
               <div class="card-info">
                 <div class="skeleton-box skeleton-text title"></div>
@@ -206,20 +233,21 @@
             </div>
           </ng-container>
 
-          <!-- STATE 2: Dati Reali -->
           <ng-container *ngIf="!isLoading">
-            <div class="spot-card" *ngFor="let spot of visitedSpots">
-              <div class="card-image">
+            <article class="spot-card" *ngFor="let spot of visitedSpots">
+              <div class="card-image" (click)="onGoToDetail(spot, $event)">
                 <img
                   [src]="spot.spot_images?.[0]?.file_path || 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=400'"
-                  [alt]="spot.title" draggable="false" />
+                  [alt]="spot.title" loading="lazy" draggable="false" />
                 <span class="badge-status status-visited">Visitato</span>
               </div>
+
               <div class="card-info">
-                <h3 class="clickable-title" (click)="onGoToDetail(spot)">{{ spot.title }}</h3>
+                <h3 class="clickable-title" (click)="onGoToDetail(spot, $event)">{{ spot.title }}</h3>
                 <p>{{ spot.description || 'Luogo già esplorato.' }}</p>
+
                 <div class="card-footer">
-                  <button class="spot-action-btn" (click)="onOpenMapWithSpot(spot)">
+                  <button class="spot-action-btn" (click)="onOpenMapWithSpot(spot, $event)">
                     <span>Vai allo spot</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       stroke-width="2.5">
@@ -228,14 +256,16 @@
                   </button>
                 </div>
               </div>
-            </div>
+            </article>
+
             <div class="empty-state" *ngIf="visitedSpots.length === 0">Nessun luogo ancora visitato.</div>
           </ng-container>
-
         </div>
-        <button class="nav-arrow next-arrow" (click)="scrollCarousel(track3, 'right')" [disabled]="isLoading">›</button>
-      </div>
-    </div>
 
-  </section>
+        <button class="nav-arrow next-arrow" (click)="scrollCarousel(track3, 'right')" [disabled]="isLoading"
+          aria-label="Scorri a destra">›</button>
+      </div>
+    </section>
+
+  </main>
 </div>
