@@ -1,0 +1,129 @@
+<!-- Stato Caricamento -->
+<div class="state-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Caricamento dello spot in corso...</p>
+</div>
+
+<!-- Stato Errore -->
+<div class="state-container" *ngIf="error && !loading">
+    <h2>⚠️ Impossibile caricare lo spot</h2>
+    <p>Si è verificato un problema nel recupero dei dati.</p>
+    <button type="button" class="btn-cancel" (click)="goBackToDetail()">Torna indietro</button>
+</div>
+
+<!-- Form di Modifica -->
+<form [formGroup]="spotForm" (ngSubmit)="onSubmit()" class="spot-form" *ngIf="!loading && !error">
+    <div class="form-header">
+        <h3>✏️ Modifica Spot</h3>
+        <p class="subtitle">Aggiorna le informazioni relative a questo punto di interesse</p>
+    </div>
+
+    <div class="form-body">
+        <!-- Titolo -->
+        <div class="form-group">
+            <label>Titolo *</label>
+            <input type="text" formControlName="title" placeholder="Es. Belvedere della Costa" />
+        </div>
+
+        <!-- Coordinate -->
+        <div class="row">
+            <div class="form-group">
+                <label>Latitudine *</label>
+                <input type="number" step="any" formControlName="latitude" placeholder="44.1234" />
+            </div>
+            <div class="form-group">
+                <label>Longitudine *</label>
+                <input type="number" step="any" formControlName="longitude" placeholder="12.5678" />
+            </div>
+        </div>
+
+        <!-- Categoria (Dinamica dal Model) & Stato -->
+        <div class="row">
+            <div class="form-group">
+                <label>Categoria</label>
+                <select formControlName="category">
+                    <option *ngFor="let cat of categories" [value]="cat.value">
+                        {{ cat.label }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Stato</label>
+                <select formControlName="status">
+                    <option value="DA_VISITARE">Da Visitare</option>
+                    <option value="VISITATO">Visitato</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Descrizione -->
+        <div class="form-group">
+            <label>Descrizione</label>
+            <textarea formControlName="description" rows="3"
+                placeholder="Aggiungi note, consigli sull'accesso o particolarità..."></textarea>
+        </div>
+
+        <!-- Rating a Stelle -->
+        <div class="form-group">
+            <label>Valutazione</label>
+            <div class="star-rating">
+                <span *ngFor="let star of [1, 2, 3, 4, 5]" (click)="setRating(star)"
+                    [class.filled]="star <= spotForm.value.rating">
+                    ★
+                </span>
+            </div>
+        </div>
+
+        <!-- Servizi disponibili -->
+        <div class="form-group">
+            <label>Servizi disponibili</label>
+            <div class="services-input-group">
+                <select #serviceSelect (change)="addServiceFromSelect(serviceSelect)">
+                    <option value="" disabled selected>-- Aggiungi un servizio --</option>
+                    <option *ngFor="let service of availableServices" [value]="service.id">
+                        {{ service.name }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="services-list" *ngIf="selectedServices.length > 0">
+                <span *ngFor="let service of selectedServices; let i = index" class="service-chip">
+                    {{ service.name }}
+                    <button type="button" (click)="removeService(i)">&times;</button>
+                </span>
+            </div>
+        </div>
+
+        <!-- Galleria Immagini con Copertina e Swap -->
+        <div class="form-group">
+            <label>Immagini (Trascina le schede per cambiare la copertina)</label>
+
+            <div class="file-drop-zone" (click)="fileInput.click()">
+                <input #fileInput type="file" multiple (change)="onImagesSelected($event)" accept="image/*" hidden />
+                <span class="upload-icon">📷</span>
+                <span class="upload-text">Clicca per aggiungere nuove foto dello spot</span>
+            </div>
+
+            <div class="image-preview-grid" *ngIf="images.length > 0">
+                <div *ngFor="let img of images; let i = index" class="image-card" [class.is-cover]="i === 0"
+                    draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)">
+
+                    <img [src]="img.previewUrl || img.file_path" alt="Anteprima spot" />
+
+                    <div class="image-overlay">
+                        <span class="image-order">{{ i === 0 ? '⭐ Copertina' : '#' + (i + 1) }}</span>
+                        <button type="button" class="btn-delete" (click)="removeImage(i)" title="Rimuovi">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Azioni in Basso -->
+    <div class="actions">
+        <button type="button" class="btn-cancel" (click)="goBackToDetail()">Annulla</button>
+        <button type="submit" [disabled]="spotForm.invalid" class="btn-save">
+            Aggiorna Spot
+        </button>
+    </div>
+</form>
