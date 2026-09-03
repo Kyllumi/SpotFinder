@@ -1,129 +1,164 @@
-<!-- Stato Caricamento -->
 <div class="state-container" *ngIf="loading">
     <div class="spinner"></div>
     <p>Caricamento dello spot in corso...</p>
 </div>
 
-<!-- Stato Errore -->
 <div class="state-container" *ngIf="error && !loading">
-    <h2>⚠️ Impossibile caricare lo spot</h2>
+    <div class="error-badge">⚠️</div>
+    <h2>Impossibile caricare lo spot</h2>
     <p>Si è verificato un problema nel recupero dei dati.</p>
-    <button type="button" class="btn-cancel" (click)="goBackToDetail()">Torna indietro</button>
+    <button type="button" class="btn-secondary" (click)="goBackToDetail()">Torna indietro</button>
 </div>
 
-<!-- Form di Modifica -->
-<form [formGroup]="spotForm" (ngSubmit)="onSubmit()" class="spot-form" *ngIf="!loading && !error">
-    <div class="form-header">
-        <h3>✏️ Modifica Spot</h3>
-        <p class="subtitle">Aggiorna le informazioni relative a questo punto di interesse</p>
-    </div>
+<div class="page-container" *ngIf="!loading && !error">
+    <form [formGroup]="spotForm" (ngSubmit)="onSubmit()" class="spot-form-dashboard">
 
-    <div class="form-body">
-        <!-- Titolo -->
-        <div class="form-group">
-            <label>Titolo *</label>
-            <input type="text" formControlName="title" placeholder="Es. Belvedere della Costa" />
+        <header class="dashboard-header">
+            <div class="header-titles">
+                <h3>✏️ Modifica Spot</h3>
+                <p class="subtitle">Aggiorna le informazioni e gestisci la galleria fotografica</p>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="btn-secondary" (click)="goBackToDetail()">Annulla</button>
+                <button type="submit" [disabled]="spotForm.invalid" class="btn-primary">
+                    Salva Modifiche
+                </button>
+            </div>
+        </header>
+
+        <div class="top-row-grid">
+
+            <section class="card">
+                <h4 class="card-title">📌 Dettagli Principali</h4>
+
+                <div class="form-group">
+                    <label for="title">Titolo dello Spot <span class="required">*</span></label>
+                    <input id="title" type="text" formControlName="title" placeholder="Es. Belvedere della Costa" />
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="category">Categoria</label>
+                        <div class="select-wrapper">
+                            <select id="category" formControlName="category">
+                                <option *ngFor="let cat of categories" [value]="cat.value">
+                                    {{ cat.label }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Stato</label>
+                        <div class="select-wrapper">
+                            <select id="status" formControlName="status">
+                                <option value="DA_VISITARE">Da Visitare</option>
+                                <option value="VISITATO">Visitato</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrizione & Note</label>
+                    <textarea id="description" formControlName="description" rows="3"
+                        placeholder="Aggiungi note, consigli sull'accesso o particolarità..."></textarea>
+                </div>
+            </section>
+
+            <section class="card">
+                <h4 class="card-title">📍 Posizione & Servizi</h4>
+
+                <div class="form-group">
+                    <label>Coordinate Geografiche</label>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="latitude" class="sub-label">Latitudine <span class="required">*</span></label>
+                            <input id="latitude" type="number" step="any" formControlName="latitude"
+                                placeholder="44.1234" />
+                        </div>
+                        <div class="form-group">
+                            <label for="longitude" class="sub-label">Longitudine <span class="required">*</span></label>
+                            <input id="longitude" type="number" step="any" formControlName="longitude"
+                                placeholder="12.5678" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-center">
+                    <div class="form-group flex-1">
+                        <label>Valutazione</label>
+                        <div class="rating-container">
+                            <div class="star-rating">
+                                <button type="button" *ngFor="let star of [1, 2, 3, 4, 5]" (click)="setRating(star)"
+                                    [class.filled]="star <= spotForm.value.rating" class="star-btn">
+                                    ★
+                                </button>
+                            </div>
+                            <span class="rating-value-badge">
+                                {{ spotForm.value.rating ? spotForm.value.rating + ' / 5' : 'Non valutato' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label>Servizi disponibili</label>
+                    <div class="select-wrapper">
+                        <select #serviceSelect (change)="addServiceFromSelect(serviceSelect)">
+                            <option value="" disabled selected>+ Aggiungi servizio...</option>
+                            <option *ngFor="let service of availableServices" [value]="service.id">
+                                {{ service.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="services-list" *ngIf="selectedServices.length > 0">
+                        <span *ngFor="let service of selectedServices; let i = index" class="service-chip">
+                            {{ service.name }}
+                            <button type="button" (click)="removeService(i)" title="Rimuovi">&times;</button>
+                        </span>
+                    </div>
+                </div>
+            </section>
+
         </div>
 
-        <!-- Coordinate -->
-        <div class="row">
-            <div class="form-group">
-                <label>Latitudine *</label>
-                <input type="number" step="any" formControlName="latitude" placeholder="44.1234" />
-            </div>
-            <div class="form-group">
-                <label>Longitudine *</label>
-                <input type="number" step="any" formControlName="longitude" placeholder="12.5678" />
-            </div>
-        </div>
-
-        <!-- Categoria (Dinamica dal Model) & Stato -->
-        <div class="row">
-            <div class="form-group">
-                <label>Categoria</label>
-                <select formControlName="category">
-                    <option *ngFor="let cat of categories" [value]="cat.value">
-                        {{ cat.label }}
-                    </option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Stato</label>
-                <select formControlName="status">
-                    <option value="DA_VISITARE">Da Visitare</option>
-                    <option value="VISITATO">Visitato</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Descrizione -->
-        <div class="form-group">
-            <label>Descrizione</label>
-            <textarea formControlName="description" rows="3"
-                placeholder="Aggiungi note, consigli sull'accesso o particolarità..."></textarea>
-        </div>
-
-        <!-- Rating a Stelle -->
-        <div class="form-group">
-            <label>Valutazione</label>
-            <div class="star-rating">
-                <span *ngFor="let star of [1, 2, 3, 4, 5]" (click)="setRating(star)"
-                    [class.filled]="star <= spotForm.value.rating">
-                    ★
+        <section class="card full-width-card">
+            <div class="card-header-inline">
+                <h4 class="card-title">🖼️ Galleria & Foto Copertina</h4>
+                <span class="field-hint" *ngIf="images.length > 0">
+                    💡 La prima immagine in alto a sinistra è la <strong>copertina</strong>. Trascina le immagini per
+                    riordinarle.
                 </span>
             </div>
-        </div>
 
-        <!-- Servizi disponibili -->
-        <div class="form-group">
-            <label>Servizi disponibili</label>
-            <div class="services-input-group">
-                <select #serviceSelect (change)="addServiceFromSelect(serviceSelect)">
-                    <option value="" disabled selected>-- Aggiungi un servizio --</option>
-                    <option *ngFor="let service of availableServices" [value]="service.id">
-                        {{ service.name }}
-                    </option>
-                </select>
-            </div>
+            <div class="gallery-layout">
+                <div class="file-drop-zone" (click)="fileInput.click()">
+                    <input #fileInput type="file" multiple (change)="onImagesSelected($event)" accept="image/*"
+                        hidden />
+                    <div class="upload-icon-wrapper">📷</div>
+                    <p class="upload-text"><strong>Aggiungi immagini</strong></p>
+                    <span class="upload-hint">Clicca o trascina file qui</span>
+                </div>
 
-            <div class="services-list" *ngIf="selectedServices.length > 0">
-                <span *ngFor="let service of selectedServices; let i = index" class="service-chip">
-                    {{ service.name }}
-                    <button type="button" (click)="removeService(i)">&times;</button>
-                </span>
-            </div>
-        </div>
+                <div class="image-preview-grid-wide" *ngIf="images.length > 0">
+                    <div *ngFor="let img of images; let i = index" class="image-card" [class.is-cover]="i === 0"
+                        draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)"
+                        (drop)="onDrop(i)">
 
-        <!-- Galleria Immagini con Copertina e Swap -->
-        <div class="form-group">
-            <label>Immagini (Trascina le schede per cambiare la copertina)</label>
+                        <img [src]="img.previewUrl || img.file_path" alt="Anteprima spot" />
+                        <span class="cover-badge" *ngIf="i === 0">Copertina</span>
 
-            <div class="file-drop-zone" (click)="fileInput.click()">
-                <input #fileInput type="file" multiple (change)="onImagesSelected($event)" accept="image/*" hidden />
-                <span class="upload-icon">📷</span>
-                <span class="upload-text">Clicca per aggiungere nuove foto dello spot</span>
-            </div>
-
-            <div class="image-preview-grid" *ngIf="images.length > 0">
-                <div *ngFor="let img of images; let i = index" class="image-card" [class.is-cover]="i === 0"
-                    draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)">
-
-                    <img [src]="img.previewUrl || img.file_path" alt="Anteprima spot" />
-
-                    <div class="image-overlay">
-                        <span class="image-order">{{ i === 0 ? '⭐ Copertina' : '#' + (i + 1) }}</span>
-                        <button type="button" class="btn-delete" (click)="removeImage(i)" title="Rimuovi">✕</button>
+                        <button type="button" class="btn-delete" (click)="removeImage(i)" title="Rimuovi immagine">
+                            ✕
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Azioni in Basso -->
-    <div class="actions">
-        <button type="button" class="btn-cancel" (click)="goBackToDetail()">Annulla</button>
-        <button type="submit" [disabled]="spotForm.invalid" class="btn-save">
-            Aggiorna Spot
-        </button>
-    </div>
-</form>
+    </form>
+</div>
