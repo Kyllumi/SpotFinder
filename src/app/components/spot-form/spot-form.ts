@@ -6,17 +6,16 @@ import {
   OnInit,
   OnChanges,
   SimpleChanges,
+  ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Spot, Service, SpotImage } from '../../models/spot.model';
 
-// Interfaccia estesa per gestire l'anteprima locale delle immagini
 export interface SpotImagePreview {
   id?: number;
   file_path: string;
   previewUrl?: string;
-  file?: File;
   uploadedAt?: string;
 }
 
@@ -42,13 +41,15 @@ export class SpotFormComponent implements OnInit, OnChanges {
   images: SpotImagePreview[] = [];
   draggedIndex: number | null = null;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
   }
 
-  // Mappatura in fase di modifica (Load)
   ngOnChanges(changes: SimpleChanges): void {
     if (this.spotForm) {
       if (changes['spotToEdit'] && this.spotToEdit) {
@@ -62,7 +63,7 @@ export class SpotFormComponent implements OnInit, OnChanges {
             id: img.id,
             file_path: img.file_path,
             previewUrl: img.file_path,
-            uploadedAt: img.uploaded_at || img.uploadedAt, // Gestisce entrambe le chiavi
+            uploadedAt: img.uploaded_at || img.uploadedAt,
           }));
         }
 
@@ -99,19 +100,16 @@ export class SpotFormComponent implements OnInit, OnChanges {
     this.spotForm.patchValue({ rating: star });
   }
 
-  // Aggiunge il servizio selezionato dalla tendina usando il suo ID reale
   addServiceFromSelect(selectElement: HTMLSelectElement): void {
     const selectedId = Number(selectElement.value);
     if (!selectedId) return;
 
-    // Cerca il servizio completo nell'array caricato da DB
     const foundService = this.availableServices.find((s) => s.id === selectedId);
 
     if (foundService && !this.selectedServices.some((s) => s.id === foundService.id)) {
       this.selectedServices.push({ ...foundService });
     }
 
-    // Reset della select sul valore predefinito
     selectElement.value = '';
   }
 
@@ -119,23 +117,29 @@ export class SpotFormComponent implements OnInit, OnChanges {
     this.selectedServices.splice(index, 1);
   }
 
-  // Gestione Immagini con file_path
+  // Generazione URL Placeholder tramite LoremFlickr
   onImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
-      Array.from(input.files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          const filePath = `/uploads/spots/${file.name}`;
-          this.images.push({
-            file: file,
-            file_path: filePath,
-            previewUrl: e.target.result,
-            uploadedAt: new Date().toISOString(),
-          });
-        };
-        reader.readAsDataURL(file);
+      Array.from(input.files).forEach(() => {
+        // Genera un lock casuale per evitare che il browser prenda l'immagine in cache e per avere foto diverse
+        const randomLock = Math.floor(Math.random() * 10000) + 1;
+        
+        // URL di LoremFlickr 600x400 a tema natura/paesaggi
+        const placeholderUrl = `https://loremflickr.com/1280/720/nature?lock=${randomLock}`;
+
+        this.images.push({
+          file_path: placeholderUrl,
+          previewUrl: placeholderUrl,
+          uploadedAt: new Date().toISOString(),
+        });
       });
+
+      // Reset dell'input file per consentire nuove selezioni
+      input.value = '';
+
+      // Forza l'aggiornamento immediato della vista in Angular
+      this.cdr.detectChanges();
     }
   }
 
@@ -143,7 +147,6 @@ export class SpotFormComponent implements OnInit, OnChanges {
     this.images.splice(index, 1);
   }
 
-  // Drag & Drop
   onDragStart(index: number): void {
     this.draggedIndex = index;
   }
@@ -172,10 +175,9 @@ export class SpotFormComponent implements OnInit, OnChanges {
       icon_code: s.icon_code || s.iconCode || null,
     }));
 
-    // Mappatura immagini per Spring Boot
     const mappedImages: SpotImage[] = this.images.map((img: any) => {
       const imgObj: SpotImage = {
-        file_path: img.file_path || img.filePath || img.url,
+        file_path: img.file_path,
         uploaded_at: img.uploaded_at || img.uploadedAt || todayLocalDate,
       };
       if (img.id) imgObj.id = img.id;
@@ -193,14 +195,13 @@ export class SpotFormComponent implements OnInit, OnChanges {
       visited_at: formVal.visited_at ? formVal.visited_at : todayLocalDate,
       created_at: formVal.created_at ? formVal.created_at : todayLocalDate,
       services: mappedServices,
-      spot_images: mappedImages, // Inoltro della lista formattata
+      spot_images: mappedImages,
     };
 
     if (this.isEditMode && this.spotToEdit?.id) {
       payload.id = this.spotToEdit.id;
     }
 
-    console.log('Payload finale con immagini:', payload);
     this.save.emit({ dto: payload });
   }
 }

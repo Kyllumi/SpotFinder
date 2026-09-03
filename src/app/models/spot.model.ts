@@ -1,5 +1,5 @@
 export type Category = string;
-export type Status = string;
+export type Status = 'DA_VISITARE' | 'VISITATO';
 
 export interface Service {
   id: number;
@@ -37,11 +37,11 @@ export interface SpotDTO {
   longitude: number;
   rating?: number;
   category: string;
-  status: string;
+  status: Status;
   visited_at?: string;
   created_at?: string;
   services: Service[];
-  spot_images?: any[];
+  spot_images?: SpotImage[];
 }
 
 export interface BoundingBox {

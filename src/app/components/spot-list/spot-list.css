@@ -1,55 +1,206 @@
-    .spot-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
 
-    .spot-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #f8fafc;
+}
 
-    .spot-card:hover,
-    .spot-card.selected {
-        border-color: #0284c7;
-        background: #f0f9ff;
-    }
+.sidebar-header {
+  padding: 14px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
 
-    .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.header-titles h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
 
-    .card-header h4 {
-        margin: 0;
-        font-size: 1rem;
-        color: #0f172a;
-    }
+.spot-count {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+}
 
-    .badge {
-        background: #0284c7;
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
+.spot-list {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
 
-    .card-body {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 8px;
-        font-size: 0.85rem;
-        color: #64748b;
-    }
+/* Card ad altezza definita e ben contrastata */
+.spot-card {
+  display: flex;
+  flex-direction: row;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  height: 105px;
+  min-height: 105px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 
-    .empty-state {
-        text-align: center;
-        color: #64748b;
-        padding: 20px;
-    }
+.spot-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.spot-card.selected {
+  border: 2px solid #10b981;
+  background-color: #f0fdf4;
+}
+
+/* Media Box */
+.card-media {
+  width: 90px;
+  min-width: 90px;
+  height: 100%;
+  position: relative;
+  background-color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-placeholder {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+
+/* Contenuto */
+.card-content {
+  flex: 1;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.category-tag {
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.spot-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.spot-status-dot.active {
+  background-color: #10b981;
+}
+
+.spot-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spot-description {
+  margin: 2px 0 0 0;
+  font-size: 0.75rem;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Footer Card */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #f1f5f9;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.rating-badge.has-rating {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* Bottone Dettaglio */
+.view-details-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #0284c7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.15s ease;
+}
+
+.view-details-btn:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+.empty-state {
+  padding: 32px 16px;
+  text-align: center;
+  color: #64748b;
+}

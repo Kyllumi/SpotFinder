@@ -1,6 +1,9 @@
-import { Component, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { UiStateService } from '../../services/ui-state';
 
 @Component({
   selector: 'app-header',
@@ -9,33 +12,58 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class HeaderComponent {
-  @Output() createSpot = new EventEmitter<void>();
-  @Output() search = new EventEmitter<string>();
-  @Output() filterFavorites = new EventEmitter<void>();
-  @Output() navigate = new EventEmitter<'home' | 'map'>();
-  
-  isMenuOpen = false;
+export class HeaderComponent implements OnInit {
   searchQuery = '';
+  isMenuOpen = false;
+  isMapPage = false;
+
+  constructor(
+    private router: Router,
+    private location: Location,
+    private uiStateService: UiStateService
+  ) {}
+
+  ngOnInit(): void {
+    // 1. Legge il percorso reale direttamente dal browser al refresh
+    this.checkCurrentRoute(this.location.path());
+
+    // 2. Continua ad ascoltare la navigazione interna di Angular
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.checkCurrentRoute(event.urlAfterRedirects);
+      });
+  }
+
+  private checkCurrentRoute(url: string): void {
+    // Normalizza e controlla se il percorso contiene /map
+    this.isMapPage = url.startsWith('/map');
+  }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  onNavigate(view: 'home' | 'map'): void {
-    this.navigate.emit(view);
+  onNavigate(routePath: string): void {
     this.isMenuOpen = false;
-  }
-
-  onSearch(): void {
-    this.search.emit(this.searchQuery);
-  }
-
-  onFavoritesClick(): void {
-    this.filterFavorites.emit();
+    this.router.navigate([`/${routePath}`]);
   }
 
   onNewSpotClick(): void {
-    this.createSpot.emit();
+    if (this.isMapPage) {
+      this.uiStateService.triggerOpenForm();
+    } else {
+      this.router.navigate(['/map']).then(() => {
+        this.uiStateService.triggerOpenForm();
+      });
+    }
+  }
+
+  onFavoritesClick(): void {
+    // Logica preferiti
+  }
+
+  onSearch(): void {
+    // Logica ricerca
   }
 }
